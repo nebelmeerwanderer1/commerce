@@ -1,0 +1,31 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Your Watchlist</h2>
+
+    {% if user.is_authenticated %}
+    
+        <ul>
+        {% for listing in listings %}
+           
+                <a href="{% url 'viewlisting' listing.id %}"> 
+                    <li> {{ listing.id }} in {{ listing.category }}: 
+                    {{ listing.title }} listed by {{ listing.seller }}. 
+                    On sale since {{ listing.creation_time }} 
+                    On watchlist: {{ listing.watchlist }}
+                    Seller: {{ listing.seller }}
+                </li> 
+           <li>
+                {{ user }}
+
+           </li>
+
+        {% endfor %}
+        </ul>
+    
+    {% else %}
+
+    You need to log in to see your watchlist
+    
+    {% endif %}
+{% endblock %}

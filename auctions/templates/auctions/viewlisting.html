@@ -1,0 +1,34 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2> {{ listing.title }}   </h2>
+
+    <ul>
+        <li> Title: {{ listing.title }} </li> 
+        <li> Description: {{ listing.description }} </li>
+        <li> Category: {{ listing.category }} </li>
+        <li> <a href={{ listing.photo_link }} target="_blank" >Link</a> </li>
+        <li> On sale since {{ listing.creation_time }} </li>
+    </ul>
+
+    {% if currentbid.bid is not None %}
+    <h3> Current bid: {{ currentbid.bid }} </h3>
+    {% else %}
+    <h3> Current bid: Be the first to bid for this item </h3>
+    {% endif %}
+
+    {% if user.is_authenticated %}
+    <form action="{% url 'addtowatchlist' listing.id %}" method="POST">
+        {% csrf_token %}
+        <input type="submit" name="Submit" value="Add to watchlist">
+    </form>
+
+    {% else %}
+
+
+    {% endif %}
+
+
+    <a href="{% url 'index' %}">Back to Active listings List</a>
+
+{% endblock %}

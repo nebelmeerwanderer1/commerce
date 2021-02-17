@@ -4,11 +4,11 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User
+from .models import User, Listing, Category, Bid, Comment
 
 
 def index(request):
-    return render(request, "auctions/index.html")
+    return render(request, "auctions/index.html", {"listings": Listing.objects.exclude(active=False).all()})
 
 
 def login_view(request):
@@ -61,3 +61,33 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "auctions/register.html")
+
+def viewlisting(request, listing_id):
+    listing = Listing.objects.get(pk = listing_id)
+    bids = listing.listing.all()
+    try:
+        currentbid = max(bids)
+    except ValueError: 
+        currentbid = None
+    return render(request, "auctions/viewlisting.html", {
+        "listing": listing,
+        "currentbid": currentbid    
+    })
+
+def watchlist(request):
+    return render(request, "auctions/watchlist.html", {
+        "listings": Listing.objects.exclude(active=False).all(),
+        "user": User.objects.get(username=request.user)
+        })
+
+def categories(request):
+    return render(request, "auctions/categories.html", {"categories": Category.objects.all()})
+
+def addtowatchlist(request, listing_id):
+    if request.method == "POST":
+        user = User.objects.get(username=request.user)
+        
+        listing = Listing.objects.get(pk = int(listing_id))
+        
+        listing.watchlist.add(user)
+        return HttpResponseRedirect(reverse("viewlisting", args=(listing.id,)))
